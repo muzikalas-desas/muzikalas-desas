@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desas Viktorīna</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #282c34;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            grid-template-rows: repeat(3, 120px);
+            gap: 10px;
+            justify-content: center;
+            background-color: #444;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .cell {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            background-color: #61dafb;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        .cell:hover {
+            transform: scale(1.1);
+        }
+        .cell.taken {
+            cursor: not-allowed;
+            background-color: #2185d0;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        #quiz {
+            display: none;
+            margin-top: 20px;
+        }
+        .quiz-button {
+            background-color: #61dafb;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .quiz-button:hover {
+            background-color: #2185d0;
+        }
+        #game-setup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .game-choice-button {
+            background-color: #61dafb;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <h1>Desas Viktorīna</h1>
+    <div id="game-setup">
+        <button class="game-choice-button" onclick="startGame('friend')">Spēlēt pret draugu</button>
+        <button class="game-choice-button" onclick="startGame('bot')">Spēlēt pret botu</button>
+    </div>
+    <div class="board" id="board" style="display:none;"></div>
+    <div id="status" style="display:none;">Spēlētāja X gājiens</div>
+    <div id="quiz" style="display:none;">
+        <p id="question"></p>
+        <div id="answers"></div>
+    </div>
+    <audio id="background-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+    <button onclick="toggleMusic()">Atskaņot / Apturēt mūziku</button>
+
+    <script>
+        const board = document.getElementById("board");
+        const status = document.getElementById("status");
+        const quizContainer = document.getElementById("quiz");
+        const questionText = document.getElementById("question");
+        const answersContainer = document.getElementById("answers");
+        const music = document.getElementById("background-music");
+        const gameSetup = document.getElementById("game-setup");
+
+        let cells = [];
+        let currentPlayer = "X";
+        let gameBoard = ["", "", "", "", "", "", "", "", ""];
+        let isBotGame = false;
+        let currentIndex = null;
+
+        const questions = [
+            {"question": "Kurš bija grupas The Beatles solists?", "options": ["A) Mick Jagger", "B) John Lennon", "C) Freddie Mercury", "D) Kurt Cobain"], "correct": "B) John Lennon"},
+            {"question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?", "options": ["A) 1975", "B) 1980", "C) 1969", "D) 1991"], "correct": "A) 1975"},
+            // Add more questions...
+        ];
+
+        function startGame(type) {
+            isBotGame = type === 'bot';
+            gameSetup.style.display = "none";
+            board.style.display = "grid";
+            status.style.display = "block";
+            createBoard();
+        }
+
+        function createBoard() {
+            board.innerHTML = "";
+            gameBoard.forEach((_, i) => {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.dataset.index = i;
+                cell.addEventListener("click", () => askQuestion(i));
+                board.appendChild(cell);
+                cells.push(cell);
+            });
+        }
+
+        function askQuestion(index) {
+            if (gameBoard[index] !== "") return;
+            currentIndex = index;
+            let randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+            questionText.textContent = randomQuestion.question;
+            answersContainer.innerHTML = "";
+            randomQuestion.options.forEach(option => {
+                let button = document.createElement("button");
+                button.textContent = option;
+                button.classList.add("quiz-button");
+                button.addEventListener("click", () => checkAnswer(option, randomQuestion.correct));
+                answersContainer.appendChild(button);
+            });
+            quizContainer.style.display = "block";
+        }
+
+        function checkAnswer(selected, correct) {
+            quizContainer.style.display = "none";
+            if (selected === correct) {
+                placeMove(currentIndex);
+            } else {
+                alert("Nepareiza atbilde! Tu zaudē gājienu.");
+                switchPlayer();
+            }
+        }
+
+        function placeMove(index) {
+            gameBoard[index] = currentPlayer;
+            cells[index].textContent = currentPlayer;
+            cells[index].classList.add("taken");
+            if (checkWin()) {
+                alert(currentPlayer + " uzvarēja!");
+                resetGame();
+            } else {
+                switchPlayer();
+                if (isBotGame && currentPlayer === "O") {
+                    botMove();
+                }
+            }
+        }
+
+        function switchPlayer() {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
+        }
+
+        function botMove() {
+            let availableMoves = gameBoard.map((value, index) => value === "" ? index : null).filter(v => v !== null);
+            let randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+            setTimeout(() => {
+                placeMove(randomMove);
+            }, 1000);
+        }
+
+        function checkWin() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                [0, 4, 8], [2, 4, 6]             // diagonals
+            ];
+
+            return winPatterns.some(pattern => {
+                return pattern.every(index => gameBoard[index] === currentPlayer);
+            });
+        }
+
+        function resetGame() {
+            gameBoard = ["", "", "", "", "", "", "", "", ""];
+            cells.forEach(cell => {
+                cell.textContent = "";
+                cell.classList.remove("taken");
+            });
+            currentPlayer = "X";
+            status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
+        }
+
+        function toggleMusic() {
+            music.paused ? music.play() : music.pause();
+        }
+    </script>
+</body>
+</html>

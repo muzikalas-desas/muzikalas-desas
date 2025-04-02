@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kriss-Krass Viktorīna</title>
+    <title>Desas Viktorīna</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -73,10 +73,24 @@
         .quiz-button:hover {
             background-color: #2185d0;
         }
+        #nameInput {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        #nameInput input {
+            font-size: 1.2em;
+            padding: 5px;
+            width: 200px;
+        }
     </style>
 </head>
 <body>
-    <h1>Kriss-Krass Viktorīna</h1>
+    <h1>Desas Viktorīna</h1>
+    <div id="nameInput">
+        <label for="playerName">Ievadi savu vārdu: </label>
+        <input type="text" id="playerName" placeholder="Tavs vārds">
+        <button onclick="startGame()">Sākt spēli</button>
+    </div>
     <div class="board" id="board"></div>
     <div id="status">Spēlētāja X gājiens</div>
     <div id="quiz">
@@ -87,6 +101,7 @@
         <source src="music.mp3" type="audio/mpeg">
     </audio>
     <button onclick="toggleMusic()">Atskaņot / Apturēt mūziku</button>
+
     <script>
         const board = document.getElementById("board");
         const status = document.getElementById("status");
@@ -94,15 +109,23 @@
         const questionText = document.getElementById("question");
         const answersContainer = document.getElementById("answers");
         const music = document.getElementById("background-music");
+        const nameInput = document.getElementById("nameInput");
+        const playerNameInput = document.getElementById("playerName");
         let cells = [];
         let currentPlayer = "X";
         let gameBoard = ["", "", "", "", "", "", "", "", ""];
         let currentIndex = null;
+<<<<<<< HEAD
         
+=======
+        let playerName = "";
+
+>>>>>>> d3cfbc02359cbafe95fa128f15b202688854b6de
         const questions = [
             {"question": "Kurš bija grupas The Beatles solists?", "options": ["A) Mick Jagger", "B) John Lennon", "C) Freddie Mercury", "D) Kurt Cobain"], "correct": "B) John Lennon"},
             {"question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?", "options": ["A) 1975", "B) 1980", "C) 1969", "D) 1991"], "correct": "A) 1975"},
             {"question": "Kurš ir pazīstams kā 'Popmūzikas karalis'?", "options": ["A) Michael Jackson", "B) Elvis Presley", "C) Prince", "D) Justin Bieber"], "correct": "A) Michael Jackson"},
+<<<<<<< HEAD
             {"question": "Kāds ir Ed Sheeran debijas albuma nosaukums?", "options": ["A) + (Plus)", "B) ÷ (Divide)", "C) X (Multiply)", "D) = (Equals)"], "correct": "A) + (Plus)"},
             {"question": "Kurš slavenais komponists bija kurls?", "options": ["A) Wolfgang Amadeus Mozart", "B) Ludwig van Beethoven", "C) Johann Sebastian Bach", "D) Antonio Vivaldi"], "correct": "B) Ludwig van Beethoven"},
             {"question": "Kāds ir galvenais instruments orķestrī?", "options": ["A) Klavieres", "B) Trompete", "C) Vioļas", "D) Ģitāra"], "correct": "C) Vioļas"},
@@ -126,6 +149,21 @@
             {"question": "Kāds ir parastais mūzikas instruments, kas spēlē ar koka stīgām?", "options": ["A) Vioļas", "B) Sitamins", "C) Klavieres", "D) Akordeons"], "correct": "A) Vioļas"},
             {"question": "Kurš komponists rakstīja 'Vācu un itāļu operas'?", "options": ["A) Mozart", "B) Beethoven", "C) Handels", "D) Haydn"], "correct": "C) Handels"}
         ];
+=======
+            // Add more questions as needed
+        ];
+
+        function startGame() {
+            playerName = playerNameInput.value.trim();
+            if (playerName === "") {
+                alert("Lūdzu, ievadi savu vārdu!");
+                return;
+            }
+            nameInput.style.display = "none";
+            createBoard();
+            updateStatus();
+        }
+>>>>>>> d3cfbc02359cbafe95fa128f15b202688854b6de
 
         function createBoard() {
             board.innerHTML = "";
@@ -174,12 +212,17 @@
 
         function switchPlayer() {
             currentPlayer = currentPlayer === "X" ? "O" : "X";
+            updateStatus();
+        }
+
+        function updateStatus() {
             status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
         }
 
         function toggleMusic() {
             music.paused ? music.play() : music.pause();
         }
+<<<<<<< HEAD
 
         window.onload = function() {
             if (music.paused) {
@@ -188,6 +231,8 @@
         };
 
         createBoard();
+=======
+>>>>>>> d3cfbc02359cbafe95fa128f15b202688854b6de
     </script>
 </body>
 </html>
