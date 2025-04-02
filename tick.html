@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="lv">
+<!DOCTYPE html>
+<html lang="lv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +42,10 @@
             border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: transform 0.2s, background 0.3s;
+        }
+        .cell:hover {
+            transform: scale(1.1);
         }
         .cell.taken {
             cursor: not-allowed;
@@ -93,91 +97,80 @@
         let cells = [];
         let currentPlayer = "X";
         let gameBoard = ["", "", "", "", "", "", "", "", ""];
-        let currentIndex = null;const questions = [
+        let currentIndex = null;
+        
+        const questions = [
         { question: "Kurš ir Latvijas himnas komponists?", correct: "Baumaņu Kārlis", options: ["Baumaņu Kārlis", "Raimonds Pauls", "Mariss Jansons", "Jāzeps Vītols"] },
         { question: "Kurš instruments ir saistīts ar latviešu tautas mūziku?", correct: "Kokle", options: ["Kokle", "Klavieres", "Ģitāra", "Trompete"] },
-        { question: "Kurš ir populārs latviešu dziedātājs?", correct: "Prāta Vētra", options: ["Prāta Vētra", "The Beatles", "Metallica", "U2"] },
-        { question: "Kurā pilsētā notiek Dziesmu svētki?", correct: "Rīga", options: ["Rīga", "Liepāja", "Daugavpils", "Valmiera"] }
+        { question: "Kurš ir klasiskais mūzikas laikmets?", correct: "Baroks", options: ["Viduslaiki", "Baroks", "Romantisms", "Mūsdienu mūzika"] },
+        { question: "Kurš ir viens no populārākajiem operas komponistiem?", correct: "Volfgangs Amadejs Mocarts", options: ["Volfgangs Amadejs Mocarts", "Frideriks Šopēns", "Džons Viljamss", "Ludvigs van Bēthovens"] },
+        { question: "Kas ir mūzikas pamatelementi?", correct: "Ritms, melodija, harmonija", options: ["Ritms, melodija, harmonija", "Gleznošana, zīmēšana, skulptūra", "Matemātika, fizika, bioloģija", "Spēles, dejas, sports"] },
+        { question: "Kurš no šiem ir stīgu instruments?", correct: "Vijole", options: ["Trompete", "Vijole", "Klavieres", "Bungas"] },
+        { question: "Kurš komponists ir sarakstījis 'Mazo nakts mūziku'?", correct: "Volfgangs Amadejs Mocarts", options: ["Ludvigs van Bēthovens", "Volfgangs Amadejs Mocarts", "Johans Sebastians Bahs", "Frēderiks Šopēns"] },
+        { question: "Kurš no šiem ir sitaminstruments?", correct: "Bungas", options: ["Klarnete", "Flauta", "Ģitāra", "Bungas"] },
+        { question: "Kā sauc noti, kas ilgst vienu sitienu?", correct: "Ceturtdaļnota", options: ["Puse no nots", "Ceturtdaļnota", "Vesela nota", "Astotdaļnota"] },
+        { question: "Kurš no šiem ir latviešu komponists?", correct: "Jāzeps Vītols", options: ["Jāzeps Vītols", "Ludvigs van Bēthovens", "Volfgangs Amadejs Mocarts", "Pjotrs Čajkovskis"] },
+        { question: "Kurā no šiem mūzikas žanriem tiek izmantots repa vokāls?", correct: "Hip-hops", options: ["Hip-hops", "Opera", "Džezs", "Klasiskā mūzika"] },
+        { question: "Cik stīgas ir standarta akustiskajai ģitārai?", correct: "6", options: ["4", "5", "6", "7"] },
+        { question: "Kā sauc mūzikas zīmi, kas nosaka skaņas augstumu?", correct: "Nots", options: ["Takts", "Nots", "Pauze", "Akords"] },
+        { question: "Kas ir diriģents?", correct: "Cilvēks, kurš vada orķestri", options: ["Cilvēks, kurš izgatavo mūzikas instrumentus", "Cilvēks, kurš vada orķestri", "Cilvēks, kurš dzied operā", "Cilvēks, kurš raksta dziesmu tekstus"] }
     ];
 
-    function createBoard() {
-        board.innerHTML = "";
-        gameBoard.forEach((_, i) => {
-            const cell = document.createElement("div");
-            cell.classList.add("cell");
-            cell.dataset.index = i;
-            cell.addEventListener("click", () => askQuestion(i));
-            board.appendChild(cell);
-            cells.push(cell);
-        });
-    }
+        function createBoard() {
+            board.innerHTML = "";
+            gameBoard.forEach((_, i) => {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.dataset.index = i;
+                cell.addEventListener("click", () => askQuestion(i));
+                board.appendChild(cell);
+                cells.push(cell);
+            });
+        }
 
-    function askQuestion(index) {
-        if (gameBoard[index] !== "") return;
-        currentIndex = index;
-        let randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-        questionText.textContent = randomQuestion.question;
-        answersContainer.innerHTML = "";
-        randomQuestion.options.forEach(option => {
-            let button = document.createElement("button");
-            button.textContent = option;
-            button.classList.add("quiz-button");
-            button.addEventListener("click", () => checkAnswer(option, randomQuestion.correct));
-            answersContainer.appendChild(button);
-        });
-        quizContainer.style.display = "block";
-    }
+        function askQuestion(index) {
+            if (gameBoard[index] !== "") return;
+            currentIndex = index;
+            let randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+            questionText.textContent = randomQuestion.question;
+            answersContainer.innerHTML = "";
+            randomQuestion.options.forEach(option => {
+                let button = document.createElement("button");
+                button.textContent = option;
+                button.classList.add("quiz-button");
+                button.addEventListener("click", () => checkAnswer(option, randomQuestion.correct));
+                answersContainer.appendChild(button);
+            });
+            quizContainer.style.display = "block";
+        }
 
-    function checkAnswer(selected, correct) {
-        quizContainer.style.display = "none";
-        if (selected === correct) {
-            placeMove(currentIndex);
-        } else {
-            alert("Nepareiza atbilde! Tu zaudē gājienu.");
+        function checkAnswer(selected, correct) {
+            quizContainer.style.display = "none";
+            if (selected === correct) {
+                placeMove(currentIndex);
+            } else {
+                alert("Nepareiza atbilde! Tu zaudē gājienu.");
+                switchPlayer();
+            }
+        }
+
+        function placeMove(index) {
+            gameBoard[index] = currentPlayer;
+            cells[index].textContent = currentPlayer;
+            cells[index].classList.add("taken");
             switchPlayer();
         }
-    }
 
-    function placeMove(index) {
-        gameBoard[index] = currentPlayer;
-        cells[index].textContent = currentPlayer;
-        cells[index].classList.add("taken");
-        if (checkWinner()) {
-            status.textContent = `Spēlētājs ${currentPlayer} uzvar! Restartēšana...`;
-            setTimeout(resetGame, 2000);
-            return;
+        function switchPlayer() {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
         }
-        if (!gameBoard.includes("")) {
-            status.textContent = "Neizšķirts! Restartēšana...";
-            setTimeout(resetGame, 2000);
-            return;
+
+        function toggleMusic() {
+            music.paused ? music.play() : music.pause();
         }
-        switchPlayer();
-    }
 
-    function switchPlayer() {
-        currentPlayer = currentPlayer === "X" ? "O" : "X";
-        status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
-    }
-
-    function toggleMusic() {
-        if (music.paused) {
-            music.play();
-        } else {
-            music.pause();
-        }
-    }
-
-    function resetGame() {
-        gameBoard = ["", "", "", "", "", "", "", "", ""];
-        currentPlayer = "X";
-        status.textContent = "Spēlētāja X gājiens";
-        cells = [];
         createBoard();
-    }
-
-    createBoard();
-</script>
-
+    </script>
 </body>
 </html>
