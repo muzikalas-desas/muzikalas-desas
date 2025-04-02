@@ -73,20 +73,58 @@
         .quiz-button:hover {
             background-color: #2185d0;
         }
+        #nameInput {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 1em;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background-color: #61dafb;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #2185d0;
+        }
     </style>
 </head>
 <body>
     <h1>Kriss-Krass Viktorīna</h1>
-    <div class="board" id="board"></div>
-    <div id="status">Spēlētāja X gājiens</div>
-    <div id="quiz">
+    
+    <div id="nameInput">
+        <label for="player1">Spēlētājs X vārds:</label>
+        <input type="text" id="player1" placeholder="Ievadiet spēlētāja X vārdu" />
+        <label for="player2">Spēlētājs O vārds:</label>
+        <input type="text" id="player2" placeholder="Ievadiet spēlētāja O vārdu" />
+        <button onclick="startGame()">Sākt spēli</button>
+    </div>
+
+    <div class="board" id="board" style="display: none;"></div>
+
+    <div id="status" style="display: none;">Spēlētāja X gājiens</div>
+    
+    <div id="quiz" style="display: none;">
         <p id="question"></p>
         <div id="answers"></div>
     </div>
+
     <audio id="background-music" loop autoplay>
         <source src="music.mp3" type="audio/mpeg">
     </audio>
     <button onclick="toggleMusic()">Atskaņot / Apturēt mūziku</button>
+
     <script>
         const board = document.getElementById("board");
         const status = document.getElementById("status");
@@ -94,11 +132,14 @@
         const questionText = document.getElementById("question");
         const answersContainer = document.getElementById("answers");
         const music = document.getElementById("background-music");
+        const nameInput = document.getElementById("nameInput");
+        let player1Name = '';
+        let player2Name = '';
         let cells = [];
         let currentPlayer = "X";
         let gameBoard = ["", "", "", "", "", "", "", "", ""];
         let currentIndex = null;
-        
+
         const questions = [
             {"question": "Kurš bija grupas The Beatles solists?", "options": ["A) Mick Jagger", "B) John Lennon", "C) Freddie Mercury", "D) Kurt Cobain"], "correct": "B) John Lennon"},
             {"question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?", "options": ["A) 1975", "B) 1980", "C) 1969", "D) 1991"], "correct": "A) 1975"},
@@ -111,7 +152,7 @@
             {"question": "Kurš instruments ir sitaminstruments?", "options": ["A) Vioļas", "B) Trombons", "C) Timpāni", "D) Klavieres"], "correct": "C) Timpāni"},
             {"question": "Kā sauc mūzikas žanru, kurā tiek izmantots daudz dažādu instrumentu un dziedātāju?", "options": ["A) Simfonija", "B) Popmūzika", "C) Kanons", "D) Blues"], "correct": "A) Simfonija"},
             {"question": "Kāds ir latviešu komponists, kurš ir pazīstams ar 'Māras zemi'?", "options": ["A) Jāzeps Vītols", "B) Pēteris Vasks", "C) Emīls Dārziņš", "D) Mārtiņš Brauns"], "correct": "A) Jāzeps Vītols"},
-            {"question": "Kurš ir mūzikas žanrs, kas ir balstīts uz ģitāru un dziedāšanu?", "options": ["A) Rokenrols", "B) Klasiķis", "C) Simfonija", "D) Opereta"], "correct": "A) Rokenrols"},
+            {"question": "Kāds ir mūzikas žanrs, kas ir balstīts uz ģitāru un dziedāšanu?", "options": ["A) Rokenrols", "B) Klasiķis", "C) Simfonija", "D) Opereta"], "correct": "A) Rokenrols"},
             {"question": "Kā sauc dziesmu, kurā galvenais ir runāts teksts un mūzika to pavada?", "options": ["A) Rapsodija", "B) Opereta", "C) Arija", "D) Hip-hop"], "correct": "A) Rapsodija"},
             {"question": "Kāds ir instruments, kuru spēlē ar zobenu un kuru sauc par 'klasisko'?", "options": ["A) Vioļas", "B) Klavieres", "C) Akordeons", "D) Lira"], "correct": "A) Vioļas"},
             {"question": "Kāds ir kopējs mūzikas instruments, kuru spēlē ar pirkstu nospiedieniem uz stīgām?", "options": ["A) Ģitāra", "B) Klavieres", "C) Saksofons", "D) Trompete"], "correct": "A) Ģitāra"},
@@ -119,13 +160,24 @@
             {"question": "Kas ir mūzikas žanrs, kurā tiek izmantots daudz dažādu kultūru mūzikas elementi?", "options": ["A) Rokenrols", "B) World Music", "C) Rapsodija", "D) Popmūzika"], "correct": "B) World Music"},
             {"question": "Kāds instruments ir sitaminstruments?", "options": ["A) Timpāni", "B) Trombons", "C) Trompete", "D) Klavieres"], "correct": "A) Timpāni"},
             {"question": "Kas ir pazīstams latviešu mūziķis, kurš pazīstams ar 'Latviešu mūzikas klasiķi'?", "options": ["A) Mārtiņš Brauns", "B) Emīls Dārziņš", "C) Jāzeps Vītols", "D) Pēteris Vasks"], "correct": "C) Jāzeps Vītols"},
-            {"question": "Kā sauc mūzikas stilu, kas radies no 20. gadsimta sākuma, balstoties uz afroamerikāņu mūziku?", "options": ["A) Popmūzika", "B) Rokenrols", "C) Džeza mūzika", "D) Country"], "correct": "C) Džeza mūzika"},
-            {"question": "Kā sauc mūzikas stilu, kas izveidojās Amerikā 20. gadsimta sākumā, un kuru iedvesmoja afroamerikāņu ritmi?", "options": ["A) Džeza mūzika", "B) Blūzs", "C) Rokenrols", "D) Kantrī"], "correct": "B) Blūzs"},
+            {"question": "Kā sauc mūzikas stilu, kas radies no 20. gadsimta sākuma, balstoties uz afroamerikāņu mūziku?", "options": ["A) Džeza mūzika", "B) Blūzs", "C) Rokenrols", "D) Kantrī"], "correct": "B) Blūzs"},
             {"question": "Kas bija mūzikas žanrs, kas kļuva populārs 80. gados un kurā izmantotas elektroniskas skaņas?", "options": ["A) Popmūzika", "B) Synthwave", "C) Rokenrols", "D) Rapsodija"], "correct": "B) Synthwave"},
             {"question": "Kura mūzikas grupa radīja slaveno dziesmu 'We Will Rock You'?", "options": ["A) Queen", "B) The Rolling Stones", "C) The Beatles", "D) AC/DC"], "correct": "A) Queen"},
             {"question": "Kāds ir parastais mūzikas instruments, kas spēlē ar koka stīgām?", "options": ["A) Vioļas", "B) Sitamins", "C) Klavieres", "D) Akordeons"], "correct": "A) Vioļas"},
             {"question": "Kurš komponists rakstīja 'Vācu un itāļu operas'?", "options": ["A) Mozart", "B) Beethoven", "C) Handels", "D) Haydn"], "correct": "C) Handels"}
         ];
+
+        function startGame() {
+            player1Name = document.getElementById("player1").value || "Spēlētājs X";
+            player2Name = document.getElementById("player2").value || "Spēlētājs O";
+
+            nameInput.style.display = "none";
+            board.style.display = "grid";
+            status.style.display = "block";
+
+            createBoard();
+            status.textContent = `${player1Name} (X) ir kārtībā!`;
+        }
 
         function createBoard() {
             board.innerHTML = "";
@@ -174,7 +226,7 @@
 
         function switchPlayer() {
             currentPlayer = currentPlayer === "X" ? "O" : "X";
-            status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
+            status.textContent = `${currentPlayer === "X" ? player1Name : player2Name} ir kārtībā!`;
         }
 
         function toggleMusic() {
@@ -187,7 +239,6 @@
             }
         };
 
-        createBoard();
     </script>
 </body>
 </html>
