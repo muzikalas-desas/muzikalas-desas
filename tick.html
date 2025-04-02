@@ -1,8 +1,8 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html><html lang="lv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe Quiz</title>
+    <title>Kriss-Krass Viktorīna</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -52,24 +52,55 @@
             font-size: 1.5em;
             font-weight: bold;
         }
+        #quiz {
+            display: none;
+            margin-top: 20px;
+        }
+        .quiz-button {
+            background-color: #61dafb;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .quiz-button:hover {
+            background-color: #2185d0;
+        }
     </style>
 </head>
 <body>
-    <h1>Tic-Tac-Toe Quiz</h1>
+    <h1>Kriss-Krass Viktorīna</h1>
     <div class="board" id="board"></div>
-    <div id="status">Player X's turn</div>
+    <div id="status">Spēlētāja X gājiens</div>
+    <div id="quiz">
+        <p id="question"></p>
+        <div id="answers"></div>
+    </div>
+    <audio id="background-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+    <button onclick="toggleMusic()">Atskaņot / Apturēt mūziku</button>
     <script>
         const board = document.getElementById("board");
         const status = document.getElementById("status");
+        const quizContainer = document.getElementById("quiz");
+        const questionText = document.getElementById("question");
+        const answersContainer = document.getElementById("answers");
+        const music = document.getElementById("background-music");
         let cells = [];
         let currentPlayer = "X";
         let gameBoard = ["", "", "", "", "", "", "", "", ""];
-        const questions = [
-            { question: "The sky is blue?", answer: "true" },
-            { question: "2 + 2 = 5?", answer: "false" },
-            { question: "Cats can fly?", answer: "false" },
-            { question: "Water is dry?", answer: "false" }
-        ];function createBoard() {
+        let currentIndex = null;const questions = [
+        { question: "Kurš ir Latvijas himnas komponists?", correct: "Baumaņu Kārlis", options: ["Baumaņu Kārlis", "Raimonds Pauls", "Mariss Jansons", "Jāzeps Vītols"] },
+        { question: "Kurš instruments ir saistīts ar latviešu tautas mūziku?", correct: "Kokle", options: ["Kokle", "Klavieres", "Ģitāra", "Trompete"] },
+        { question: "Kurš ir populārs latviešu dziedātājs?", correct: "Prāta Vētra", options: ["Prāta Vētra", "The Beatles", "Metallica", "U2"] },
+        { question: "Kurā pilsētā notiek Dziesmu svētki?", correct: "Rīga", options: ["Rīga", "Liepāja", "Daugavpils", "Valmiera"] }
+    ];
+
+    function createBoard() {
         board.innerHTML = "";
         gameBoard.forEach((_, i) => {
             const cell = document.createElement("div");
@@ -83,17 +114,26 @@
 
     function askQuestion(index) {
         if (gameBoard[index] !== "") return;
+        currentIndex = index;
         let randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-        let userAnswer = prompt(randomQuestion.question + " (true/false)");
-        if (userAnswer !== null && userAnswer.trim().toLowerCase() === "true") {
-            if (randomQuestion.answer === "true") {
-                placeMove(index);
-            } else {
-                alert("Incorrect answer! You lose your turn.");
-                switchPlayer();
-            }
+        questionText.textContent = randomQuestion.question;
+        answersContainer.innerHTML = "";
+        randomQuestion.options.forEach(option => {
+            let button = document.createElement("button");
+            button.textContent = option;
+            button.classList.add("quiz-button");
+            button.addEventListener("click", () => checkAnswer(option, randomQuestion.correct));
+            answersContainer.appendChild(button);
+        });
+        quizContainer.style.display = "block";
+    }
+
+    function checkAnswer(selected, correct) {
+        quizContainer.style.display = "none";
+        if (selected === correct) {
+            placeMove(currentIndex);
         } else {
-            alert("Incorrect answer! You lose your turn.");
+            alert("Nepareiza atbilde! Tu zaudē gājienu.");
             switchPlayer();
         }
     }
@@ -103,12 +143,12 @@
         cells[index].textContent = currentPlayer;
         cells[index].classList.add("taken");
         if (checkWinner()) {
-            status.textContent = `Player ${currentPlayer} wins! Restarting...`;
+            status.textContent = `Spēlētājs ${currentPlayer} uzvar! Restartēšana...`;
             setTimeout(resetGame, 2000);
             return;
         }
         if (!gameBoard.includes("")) {
-            status.textContent = "It's a draw! Restarting...";
+            status.textContent = "Neizšķirts! Restartēšana...";
             setTimeout(resetGame, 2000);
             return;
         }
@@ -117,25 +157,21 @@
 
     function switchPlayer() {
         currentPlayer = currentPlayer === "X" ? "O" : "X";
-        status.textContent = `Player ${currentPlayer}'s turn`;
+        status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
     }
 
-    function checkWinner() {
-        const winPatterns = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8], 
-            [0, 3, 6], [1, 4, 7], [2, 5, 8], 
-            [0, 4, 8], [2, 4, 6]
-        ];
-        return winPatterns.some(pattern => {
-            const [a, b, c] = pattern;
-            return gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c];
-        });
+    function toggleMusic() {
+        if (music.paused) {
+            music.play();
+        } else {
+            music.pause();
+        }
     }
 
     function resetGame() {
         gameBoard = ["", "", "", "", "", "", "", "", ""];
         currentPlayer = "X";
-        status.textContent = "Player X's turn";
+        status.textContent = "Spēlētāja X gājiens";
         cells = [];
         createBoard();
     }
