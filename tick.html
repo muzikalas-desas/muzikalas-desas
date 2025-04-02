@@ -83,7 +83,7 @@
         <p id="question"></p>
         <div id="answers"></div>
     </div>
-    <audio id="background-music" loop>
+    <audio id="background-music" loop autoplay>
         <source src="music.mp3" type="audio/mpeg">
     </audio>
     <button onclick="toggleMusic()">Atskaņot / Apturēt mūziku</button>
@@ -100,33 +100,32 @@
         let currentIndex = null;
         
         const questions = [
-    {"question": "Kurš bija grupas The Beatles solists?", "options": ["A) Mick Jagger", "B) John Lennon", "C) Freddie Mercury", "D) Kurt Cobain"], "correct": "B) John Lennon"},
-    {"question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?", "options": ["A) 1975", "B) 1980", "C) 1969", "D) 1991"], "correct": "A) 1975"},
-    {"question": "Kurš ir pazīstams kā 'Popmūzikas karalis'?", "options": ["A) Michael Jackson", "B) Elvis Presley", "C) Prince", "D) Justin Bieber"], "correct": "A) Michael Jackson"},
-    {"question": "Kāds ir Ed Sheeran debijas albuma nosaukums?", "options": ["A) + (Plus)", "B) ÷ (Divide)", "C) X (Multiply)", "D) = (Equals)"], "correct": "A) + (Plus)"},
-    {"question": "Kurš slavenais komponists bija kurls?", "options": ["A) Wolfgang Amadeus Mozart", "B) Ludwig van Beethoven", "C) Johann Sebastian Bach", "D) Antonio Vivaldi"], "correct": "B) Ludwig van Beethoven"},
-    {"question": "Kāds ir galvenais instruments orķestrī?", "options": ["A) Klavieres", "B) Trompete", "C) Vioļas", "D) Ģitāra"], "correct": "C) Vioļas"},
-    {"question": "Kas ir dziesmas 'Jingle Bells' autors?", "options": ["A) Johann Strauss", "B) James Lord Pierpont", "C) Ludwig van Beethoven", "D) Franz Schubert"], "correct": "B) James Lord Pierpont"},
-    {"question": "Kāds ir ritma termins, kas nozīmē skaņas garumu?", "options": ["A) Pusnota", "B) Pusi", "C) Skaņas vilnis", "D) Stāvēt"], "correct": "A) Pusnota"},
-    {"question": "Kurš instruments ir sitaminstruments?", "options": ["A) Vioļas", "B) Trombons", "C) Timpāni", "D) Klavieres"], "correct": "C) Timpāni"},
-    {"question": "Kā sauc mūzikas žanru, kurā tiek izmantots daudz dažādu instrumentu un dziedātāju?", "options": ["A) Simfonija", "B) Popmūzika", "C) Kanons", "D) Blues"], "correct": "A) Simfonija"},
-    {"question": "Kāds ir latviešu komponists, kurš ir pazīstams ar 'Māras zemi'?", "options": ["A) Jāzeps Vītols", "B) Pēteris Vasks", "C) Emīls Dārziņš", "D) Mārtiņš Brauns"], "correct": "A) Jāzeps Vītols"},
-    {"question": "Kurš ir mūzikas žanrs, kas ir balstīts uz ģitāru un dziedāšanu?", "options": ["A) Rokenrols", "B) Klasiķis", "C) Simfonija", "D) Opereta"], "correct": "A) Rokenrols"},
-    {"question": "Kā sauc dziesmu, kurā galvenais ir runāts teksts un mūzika to pavada?", "options": ["A) Rapsodija", "B) Opereta", "C) Arija", "D) Hip-hop"], "correct": "A) Rapsodija"},
-    {"question": "Kāds ir instruments, kuru spēlē ar zobenu un kuru sauc par 'klasisko'?", "options": ["A) Vioļas", "B) Klavieres", "C) Akordeons", "D) Lira"], "correct": "A) Vioļas"},
-    {"question": "Kāds ir kopējs mūzikas instruments, kuru spēlē ar pirkstu nospiedieniem uz stīgām?", "options": ["A) Ģitāra", "B) Klavieres", "C) Saksofons", "D) Trompete"], "correct": "A) Ģitāra"},
-    {"question": "Kāds ir latviešu komponists, kurš pazīstams ar savu mūziku folklorā?", "options": ["A) Jāzeps Vītols", "B) Pēteris Vasks", "C) Mārtiņš Brauns", "D) Emīls Dārziņš"], "correct": "C) Mārtiņš Brauns"},
-    {"question": "Kas ir mūzikas žanrs, kurā tiek izmantots daudz dažādu kultūru mūzikas elementi?", "options": ["A) Rokenrols", "B) World Music", "C) Rapsodija", "D) Popmūzika"], "correct": "B) World Music"},
-    {"question": "Kāds instruments ir sitaminstruments?", "options": ["A) Timpāni", "B) Trombons", "C) Trompete", "D) Klavieres"], "correct": "A) Timpāni"},
-    {"question": "Kas ir pazīstams latviešu mūziķis, kurš pazīstams ar 'Latviešu mūzikas klasiķi'?", "options": ["A) Mārtiņš Brauns", "B) Emīls Dārziņš", "C) Jāzeps Vītols", "D) Pēteris Vasks"], "correct": "C) Jāzeps Vītols"},
-    {"question": "Kā sauc mūzikas stilu, kas radies no 20. gadsimta sākuma, balstoties uz afroamerikāņu mūziku?", "options": ["A) Popmūzika", "B) Rokenrols", "C) Džeza mūzika", "D) Country"], "correct": "C) Džeza mūzika"},
-    {"question": "Kā sauc mūzikas stilu, kas izveidojās Amerikā 20. gadsimta sākumā, un kuru iedvesmoja afroamerikāņu ritmi?", "options": ["A) Džeza mūzika", "B) Blūzs", "C) Rokenrols", "D) Kantrī"], "correct": "B) Blūzs"},
-    {"question": "Kas bija mūzikas žanrs, kas kļuva populārs 80. gados un kurā izmantotas elektroniskas skaņas?", "options": ["A) Popmūzika", "B) Synthwave", "C) Rokenrols", "D) Rapsodija"], "correct": "B) Synthwave"},
-    {"question": "Kura mūzikas grupa radīja slaveno dziesmu 'We Will Rock You'?", "options": ["A) Queen", "B) The Rolling Stones", "C) The Beatles", "D) AC/DC"], "correct": "A) Queen"},
-    {"question": "Kāds ir parastais mūzikas instruments, kas spēlē ar koka stīgām?", "options": ["A) Vioļas", "B) Sitamins", "C) Klavieres", "D) Akordeons"], "correct": "A) Vioļas"},
-    {"question": "Kurš komponists rakstīja 'Vācu un itāļu operas'?", "options": ["A) Mozart", "B) Beethoven", "C) Handels", "D) Haydn"], "correct": "C) Handels"}
-]
-
+            {"question": "Kurš bija grupas The Beatles solists?", "options": ["A) Mick Jagger", "B) John Lennon", "C) Freddie Mercury", "D) Kurt Cobain"], "correct": "B) John Lennon"},
+            {"question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?", "options": ["A) 1975", "B) 1980", "C) 1969", "D) 1991"], "correct": "A) 1975"},
+            {"question": "Kurš ir pazīstams kā 'Popmūzikas karalis'?", "options": ["A) Michael Jackson", "B) Elvis Presley", "C) Prince", "D) Justin Bieber"], "correct": "A) Michael Jackson"},
+            {"question": "Kāds ir Ed Sheeran debijas albuma nosaukums?", "options": ["A) + (Plus)", "B) ÷ (Divide)", "C) X (Multiply)", "D) = (Equals)"], "correct": "A) + (Plus)"},
+            {"question": "Kurš slavenais komponists bija kurls?", "options": ["A) Wolfgang Amadeus Mozart", "B) Ludwig van Beethoven", "C) Johann Sebastian Bach", "D) Antonio Vivaldi"], "correct": "B) Ludwig van Beethoven"},
+            {"question": "Kāds ir galvenais instruments orķestrī?", "options": ["A) Klavieres", "B) Trompete", "C) Vioļas", "D) Ģitāra"], "correct": "C) Vioļas"},
+            {"question": "Kas ir dziesmas 'Jingle Bells' autors?", "options": ["A) Johann Strauss", "B) James Lord Pierpont", "C) Ludwig van Beethoven", "D) Franz Schubert"], "correct": "B) James Lord Pierpont"},
+            {"question": "Kāds ir ritma termins, kas nozīmē skaņas garumu?", "options": ["A) Pusnota", "B) Pusi", "C) Skaņas vilnis", "D) Stāvēt"], "correct": "A) Pusnota"},
+            {"question": "Kurš instruments ir sitaminstruments?", "options": ["A) Vioļas", "B) Trombons", "C) Timpāni", "D) Klavieres"], "correct": "C) Timpāni"},
+            {"question": "Kā sauc mūzikas žanru, kurā tiek izmantots daudz dažādu instrumentu un dziedātāju?", "options": ["A) Simfonija", "B) Popmūzika", "C) Kanons", "D) Blues"], "correct": "A) Simfonija"},
+            {"question": "Kāds ir latviešu komponists, kurš ir pazīstams ar 'Māras zemi'?", "options": ["A) Jāzeps Vītols", "B) Pēteris Vasks", "C) Emīls Dārziņš", "D) Mārtiņš Brauns"], "correct": "A) Jāzeps Vītols"},
+            {"question": "Kurš ir mūzikas žanrs, kas ir balstīts uz ģitāru un dziedāšanu?", "options": ["A) Rokenrols", "B) Klasiķis", "C) Simfonija", "D) Opereta"], "correct": "A) Rokenrols"},
+            {"question": "Kā sauc dziesmu, kurā galvenais ir runāts teksts un mūzika to pavada?", "options": ["A) Rapsodija", "B) Opereta", "C) Arija", "D) Hip-hop"], "correct": "A) Rapsodija"},
+            {"question": "Kāds ir instruments, kuru spēlē ar zobenu un kuru sauc par 'klasisko'?", "options": ["A) Vioļas", "B) Klavieres", "C) Akordeons", "D) Lira"], "correct": "A) Vioļas"},
+            {"question": "Kāds ir kopējs mūzikas instruments, kuru spēlē ar pirkstu nospiedieniem uz stīgām?", "options": ["A) Ģitāra", "B) Klavieres", "C) Saksofons", "D) Trompete"], "correct": "A) Ģitāra"},
+            {"question": "Kāds ir latviešu komponists, kurš pazīstams ar savu mūziku folklorā?", "options": ["A) Jāzeps Vītols", "B) Pēteris Vasks", "C) Mārtiņš Brauns", "D) Emīls Dārziņš"], "correct": "C) Mārtiņš Brauns"},
+            {"question": "Kas ir mūzikas žanrs, kurā tiek izmantots daudz dažādu kultūru mūzikas elementi?", "options": ["A) Rokenrols", "B) World Music", "C) Rapsodija", "D) Popmūzika"], "correct": "B) World Music"},
+            {"question": "Kāds instruments ir sitaminstruments?", "options": ["A) Timpāni", "B) Trombons", "C) Trompete", "D) Klavieres"], "correct": "A) Timpāni"},
+            {"question": "Kas ir pazīstams latviešu mūziķis, kurš pazīstams ar 'Latviešu mūzikas klasiķi'?", "options": ["A) Mārtiņš Brauns", "B) Emīls Dārziņš", "C) Jāzeps Vītols", "D) Pēteris Vasks"], "correct": "C) Jāzeps Vītols"},
+            {"question": "Kā sauc mūzikas stilu, kas radies no 20. gadsimta sākuma, balstoties uz afroamerikāņu mūziku?", "options": ["A) Popmūzika", "B) Rokenrols", "C) Džeza mūzika", "D) Country"], "correct": "C) Džeza mūzika"},
+            {"question": "Kā sauc mūzikas stilu, kas izveidojās Amerikā 20. gadsimta sākumā, un kuru iedvesmoja afroamerikāņu ritmi?", "options": ["A) Džeza mūzika", "B) Blūzs", "C) Rokenrols", "D) Kantrī"], "correct": "B) Blūzs"},
+            {"question": "Kas bija mūzikas žanrs, kas kļuva populārs 80. gados un kurā izmantotas elektroniskas skaņas?", "options": ["A) Popmūzika", "B) Synthwave", "C) Rokenrols", "D) Rapsodija"], "correct": "B) Synthwave"},
+            {"question": "Kura mūzikas grupa radīja slaveno dziesmu 'We Will Rock You'?", "options": ["A) Queen", "B) The Rolling Stones", "C) The Beatles", "D) AC/DC"], "correct": "A) Queen"},
+            {"question": "Kāds ir parastais mūzikas instruments, kas spēlē ar koka stīgām?", "options": ["A) Vioļas", "B) Sitamins", "C) Klavieres", "D) Akordeons"], "correct": "A) Vioļas"},
+            {"question": "Kurš komponists rakstīja 'Vācu un itāļu operas'?", "options": ["A) Mozart", "B) Beethoven", "C) Handels", "D) Haydn"], "correct": "C) Handels"}
+        ];
 
         function createBoard() {
             board.innerHTML = "";
@@ -181,6 +180,12 @@
         function toggleMusic() {
             music.paused ? music.play() : music.pause();
         }
+
+        window.onload = function() {
+            if (music.paused) {
+                music.play();
+            }
+        };
 
         createBoard();
     </script>
