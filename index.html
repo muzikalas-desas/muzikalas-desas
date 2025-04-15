@@ -126,7 +126,6 @@
         const questions = [
             {"question": "Kurš bija grupas The Beatles solists?", "options": ["A) Mick Jagger", "B) John Lennon", "C) Freddie Mercury", "D) Kurt Cobain"], "correct": "B) John Lennon"},
             {"question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?", "options": ["A) 1975", "B) 1980", "C) 1969", "D) 1991"], "correct": "A) 1975"},
-            // Add more questions...
         ];
 
         function startGame(type) {
@@ -139,6 +138,10 @@
 
         function createBoard() {
             board.innerHTML = "";
+            cells = [];
+            gameBoard = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = "X";
+            status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
             gameBoard.forEach((_, i) => {
                 const cell = document.createElement("div");
                 cell.classList.add("cell");
@@ -172,6 +175,11 @@
             } else {
                 alert("Nepareiza atbilde! Tu zaudē gājienu.");
                 switchPlayer();
+                if (isBotGame && currentPlayer === "O") {
+                    setTimeout(() => {
+                        botMove();
+                    }, 800);
+                }
             }
         }
 
@@ -185,7 +193,9 @@
             } else {
                 switchPlayer();
                 if (isBotGame && currentPlayer === "O") {
-                    botMove();
+                    setTimeout(() => {
+                        botMove();
+                    }, 800);
                 }
             }
         }
@@ -197,19 +207,17 @@
 
         function botMove() {
             let availableMoves = gameBoard.map((value, index) => value === "" ? index : null).filter(v => v !== null);
+            if (availableMoves.length === 0) return;
             let randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
-            setTimeout(() => {
-                placeMove(randomMove);
-            }, 1000);
+            placeMove(randomMove);
         }
 
         function checkWin() {
             const winPatterns = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-                [0, 4, 8], [2, 4, 6]             // diagonals
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
             ];
-
             return winPatterns.some(pattern => {
                 return pattern.every(index => gameBoard[index] === currentPlayer);
             });
