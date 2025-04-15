@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desas Viktorīna</title>
+    <title>Muzikālās Desas</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -14,15 +14,16 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
         h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
         }
         .board {
-            display: grid;
+            display: none;
             grid-template-columns: repeat(3, 120px);
             grid-template-rows: repeat(3, 120px);
             gap: 10px;
@@ -30,6 +31,7 @@
             background-color: #444;
             padding: 10px;
             border-radius: 10px;
+            margin: 20px 0;
         }
         .cell {
             width: 120px;
@@ -45,20 +47,26 @@
             transition: transform 0.2s, background 0.3s;
         }
         .cell:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
         .cell.taken {
             cursor: not-allowed;
             background-color: #2185d0;
         }
+        .cell.locked {
+            cursor: not-allowed;
+            background-color: #ff5555;
+        }
         #status {
-            margin-top: 20px;
+            margin: 20px 0;
             font-size: 1.5em;
             font-weight: bold;
+            display: none;
         }
         #quiz {
             display: none;
             margin-top: 20px;
+            max-width: 600px;
         }
         .quiz-button {
             background-color: #61dafb;
@@ -69,6 +77,7 @@
             cursor: pointer;
             border-radius: 5px;
             transition: background 0.3s;
+            width: 100%;
         }
         .quiz-button:hover {
             background-color: #2185d0;
@@ -82,31 +91,63 @@
         .game-choice-button {
             background-color: #61dafb;
             border: none;
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 1.5em;
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1.2em;
             cursor: pointer;
             border-radius: 5px;
             transition: background 0.3s;
+            width: 250px;
+        }
+        .game-choice-button:hover {
+            background-color: #2185d0;
+        }
+        #reset-button {
+            background-color: #ff5555;
+            border: none;
+            padding: 10px 20px;
+            margin: 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+            display: none;
+        }
+        #reset-button:hover {
+            background-color: #ff0000;
+        }
+        #music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #61dafb;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2em;
         }
     </style>
 </head>
 <body>
-    <h1>Desas Viktorīna</h1>
+    <h1>Muzikālās Desas</h1>
     <div id="game-setup">
         <button class="game-choice-button" onclick="startGame('friend')">Spēlēt pret draugu</button>
         <button class="game-choice-button" onclick="startGame('bot')">Spēlēt pret botu</button>
     </div>
-    <div class="board" id="board" style="display:none;"></div>
-    <div id="status" style="display:none;">Spēlētāja X gājiens</div>
-    <div id="quiz" style="display:none;">
+    <div class="board" id="board"></div>
+    <div id="status">Spēlētāja X gājiens</div>
+    <div id="quiz">
         <p id="question"></p>
         <div id="answers"></div>
     </div>
+    <button id="reset-button" onclick="resetGame()">Spēlēt vēlreiz</button>
     <audio id="background-music" loop>
         <source src="music.mp3" type="audio/mpeg">
     </audio>
-    <button onclick="toggleMusic()">Atskaņot / Apturēt mūziku</button>
+    <button id="music-toggle" onclick="toggleMusic()">🎵</button>
 
     <script>
         const board = document.getElementById("board");
@@ -116,125 +157,261 @@
         const answersContainer = document.getElementById("answers");
         const music = document.getElementById("background-music");
         const gameSetup = document.getElementById("game-setup");
+        const resetButton = document.getElementById("reset-button");
 
         let cells = [];
         let currentPlayer = "X";
         let gameBoard = ["", "", "", "", "", "", "", "", ""];
         let isBotGame = false;
-        let currentIndex = null;
+        let gameActive = false;
+        let selectedCellIndex = null;
+        let waitingForAnswer = false;
 
         const questions = [
-            {"question": "Kurš bija grupas The Beatles solists?", "options": ["A) Mick Jagger", "B) John Lennon", "C) Freddie Mercury", "D) Kurt Cobain"], "correct": "B) John Lennon"},
-            {"question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?", "options": ["A) 1975", "B) 1980", "C) 1969", "D) 1991"], "correct": "A) 1975"},
+            {
+                "question": "Kurš bija grupas The Beatles solists?",
+                "options": ["A) Mick Jagger", "B) John Lennon", "C) Freddie Mercury", "D) Kurt Cobain"],
+                "correct": "B) John Lennon"
+            },
+            {
+                "question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?",
+                "options": ["A) 1975", "B) 1980", "C) 1969", "D) 1991"],
+                "correct": "A) 1975"
+            },
+            {
+                "question": "Kā sauc slaveno latviešu komponistu, kurš radījis 'Gaismas pili'?",
+                "options": ["A) Jānis Lūsēns", "B) Mārtiņš Brauns", "C) Pēteris Vasks", "D) Jāzeps Vītols"],
+                "correct": "C) Pēteris Vasks"
+            },
+            {
+                "question": "Kas ir klavieru izcelsme?",
+                "options": ["A) Stīgu instruments", "B) Pūšamais instruments", "C) Atsitienu instruments", "D) Tastatūras instruments"],
+                "correct": "D) Tastatūras instruments"
+            },
+            {
+                "question": "Kāds ir dziesmas 'Despacito' izpildītājs?",
+                "options": ["A) Luis Fonsi", "B) Enrique Iglesias", "C) Shakira", "D) Daddy Yankee"],
+                "correct": "A) Luis Fonsi"
+            },
+            {
+                "question": "Kurā žanrā ir grupas Metallica mūzika?",
+                "options": ["A) Popmūzika", "B) Klasiķe", "C) Metal", "D) Jazz"],
+                "correct": "C) Metal"
+            },
+            {
+                "question": "Kāds ir Latvijas valsts himnas nosaukums?",
+                "options": ["A) Pūt, vējiņi!", "B) Daugava", "C) Gaismas pils", "D) Latvijas dziesma"],
+                "correct": "A) Pūt, vējiņi!"
+            },
+            {
+                "question": "Kas ir atbildīgs par ritmu dziesmās?",
+                "options": ["A) Vokāls", "B) Baskitāra", "C) Bungas", "D) Klavieres"],
+                "correct": "C) Bungas"
+            },
+            {
+                "question": "Kas bija grupas Nirvana solists?",
+                "options": ["A) Kurt Cobain", "B) Freddie Mercury", "C) Liam Gallagher", "D) Ozzy Osbourne"],
+                "correct": "A) Kurt Cobain"
+            },
+            {
+                "question": "Kurš ir dziedājis dziesmu 'Shape of You'?",
+                "options": ["A) Ed Sheeran", "B) Justin Bieber", "C) Shawn Mendes", "D) Harry Styles"],
+                "correct": "A) Ed Sheeran"
+            }
         ];
 
-        function startGame(type) {
-            isBotGame = type === 'bot';
-            gameSetup.style.display = "none";
-            board.style.display = "grid";
-            status.style.display = "block";
-            createBoard();
-        }
-
-        function createBoard() {
-            board.innerHTML = "";
-            cells = [];
+        function startGame(mode) {
+            isBotGame = mode === 'bot';
+            gameSetup.style.display = 'none';
+            board.style.display = 'grid';
+            status.style.display = 'block';
+            resetButton.style.display = 'none';
+            
+            board.innerHTML = '';
             gameBoard = ["", "", "", "", "", "", "", "", ""];
             currentPlayer = "X";
+            gameActive = true;
+            
+            generateBoard();
             status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
-            gameBoard.forEach((_, i) => {
-                const cell = document.createElement("div");
-                cell.classList.add("cell");
-                cell.dataset.index = i;
-                cell.addEventListener("click", () => askQuestion(i));
+            
+            if (isBotGame && currentPlayer === 'O') {
+                setTimeout(botMove, 500);
+            }
+        }
+
+        function generateBoard() {
+            cells = [];
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.setAttribute('data-index', i);
+                cell.addEventListener('click', handleClick);
                 board.appendChild(cell);
                 cells.push(cell);
-            });
+            }
         }
 
-        function askQuestion(index) {
+        function handleClick(event) {
+            if (!gameActive || waitingForAnswer || (isBotGame && currentPlayer === 'O')) return;
+            
+            const index = event.target.getAttribute('data-index');
             if (gameBoard[index] !== "") return;
-            currentIndex = index;
-            let randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-            questionText.textContent = randomQuestion.question;
-            answersContainer.innerHTML = "";
-            randomQuestion.options.forEach(option => {
-                let button = document.createElement("button");
-                button.textContent = option;
-                button.classList.add("quiz-button");
-                button.addEventListener("click", () => checkAnswer(option, randomQuestion.correct));
-                answersContainer.appendChild(button);
-            });
-            quizContainer.style.display = "block";
+            
+            selectedCellIndex = index;
+            askQuestion();
         }
 
-        function checkAnswer(selected, correct) {
-            quizContainer.style.display = "none";
-            if (selected === correct) {
-                placeMove(currentIndex);
-            } else {
-                alert("Nepareiza atbilde! Tu zaudē gājienu.");
-                switchPlayer();
-                if (isBotGame && currentPlayer === "O") {
-                    setTimeout(() => {
-                        botMove();
-                    }, 800);
-                }
-            }
+        function makeMove(index, player) {
+            gameBoard[index] = player;
+            cells[index].textContent = player;
+            cells[index].classList.add('taken');
         }
 
-        function placeMove(index) {
-            gameBoard[index] = currentPlayer;
-            cells[index].textContent = currentPlayer;
-            cells[index].classList.add("taken");
-            if (checkWin()) {
-                alert(currentPlayer + " uzvarēja!");
-                resetGame();
-            } else {
-                switchPlayer();
-                if (isBotGame && currentPlayer === "O") {
-                    setTimeout(() => {
-                        botMove();
-                    }, 800);
-                }
-            }
-        }
-
-        function switchPlayer() {
-            currentPlayer = currentPlayer === "X" ? "O" : "X";
-            status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
-        }
-
-        function botMove() {
-            let availableMoves = gameBoard.map((value, index) => value === "" ? index : null).filter(v => v !== null);
-            if (availableMoves.length === 0) return;
-            let randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
-            placeMove(randomMove);
-        }
-
-        function checkWin() {
-            const winPatterns = [
+        function checkWinner() {
+            const winningCombinations = [
                 [0, 1, 2], [3, 4, 5], [6, 7, 8],
                 [0, 3, 6], [1, 4, 7], [2, 5, 8],
                 [0, 4, 8], [2, 4, 6]
             ];
-            return winPatterns.some(pattern => {
-                return pattern.every(index => gameBoard[index] === currentPlayer);
+            
+            return winningCombinations.some(combo => {
+                const [a, b, c] = combo;
+                return gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c];
             });
         }
 
-        function resetGame() {
-            gameBoard = ["", "", "", "", "", "", "", "", ""];
-            cells.forEach(cell => {
-                cell.textContent = "";
-                cell.classList.remove("taken");
-            });
+        function checkDraw() {
+            return gameBoard.every(cell => cell !== "");
+        }
+
+        function botMove() {
+            if (!gameActive) return;
+            
+            for (let i = 0; i < 9; i++) {
+                if (gameBoard[i] === "") {
+                    gameBoard[i] = "O";
+                    if (checkWinner()) {
+                        makeMove(i, "O");
+                        status.textContent = "Spēlētājs O uzvarēja!";
+                        endGame();
+                        return;
+                    }
+                    gameBoard[i] = "";
+                }
+            }
+            
+            for (let i = 0; i < 9; i++) {
+                if (gameBoard[i] === "") {
+                    gameBoard[i] = "X";
+                    if (checkWinner()) {
+                        makeMove(i, "O");
+                        currentPlayer = "X";
+                        status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
+                        return;
+                    }
+                    gameBoard[i] = "";
+                }
+            }
+            
+            if (gameBoard[4] === "") {
+                makeMove(4, "O");
+            } else {
+                const corners = [0, 2, 6, 8];
+                const availableCorners = corners.filter(i => gameBoard[i] === "");
+                if (availableCorners.length > 0) {
+                    const randomCorner = availableCorners[Math.floor(Math.random() * availableCorners.length)];
+                    makeMove(randomCorner, "O");
+                } else {
+                    let availableMoves = [];
+                    for (let i = 0; i < 9; i++) {
+                        if (gameBoard[i] === "") availableMoves.push(i);
+                    }
+                    if (availableMoves.length > 0) {
+                        const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+                        makeMove(randomMove, "O");
+                    }
+                }
+            }
+            
+            if (checkWinner()) {
+                status.textContent = "Spēlētājs O uzvarēja!";
+                endGame();
+                return;
+            }
+            
+            if (checkDraw()) {
+                status.textContent = "Neizšķirts!";
+                endGame();
+                return;
+            }
+            
             currentPlayer = "X";
             status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
         }
 
+        function endGame() {
+            gameActive = false;
+            resetButton.style.display = 'block';
+        }
+
+        function resetGame() {
+            board.style.display = 'none';
+            status.style.display = 'none';
+            resetButton.style.display = 'none';
+            gameSetup.style.display = 'flex';
+            quizContainer.style.display = 'none';
+            waitingForAnswer = false;
+        }
+
         function toggleMusic() {
-            music.paused ? music.play() : music.pause();
+            if (music.paused) {
+                music.play();
+            } else {
+                music.pause();
+            }
+        }
+
+        function askQuestion() {
+            waitingForAnswer = true;
+            const questionData = questions[Math.floor(Math.random() * questions.length)];
+            
+            questionText.textContent = questionData.question;
+            answersContainer.innerHTML = "";
+            
+            questionData.options.forEach(option => {
+                const button = document.createElement("button");
+                button.className = "quiz-button";
+                button.textContent = option;
+                button.onclick = () => {
+                    if (option === questionData.correct) {
+                        makeMove(selectedCellIndex, currentPlayer);
+                        
+                        if (checkWinner()) {
+                            status.textContent = `Spēlētājs ${currentPlayer} uzvarēja!`;
+                            endGame();
+                        } else if (checkDraw()) {
+                            status.textContent = "Neizšķirts!";
+                            endGame();
+                        } else {
+                            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                            status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
+                            
+                            if (isBotGame && currentPlayer === 'O') {
+                                setTimeout(botMove, 500);
+                            }
+                        }
+                    } else {
+                        alert(`Nepareizi! Pareizā atbilde: ${questionData.correct}`);
+                    }
+                    
+                    quizContainer.style.display = "none";
+                    waitingForAnswer = false;
+                };
+                answersContainer.appendChild(button);
+            });
+            
+            quizContainer.style.display = "block";
         }
     </script>
 </body>
