@@ -233,141 +233,135 @@
         let selectedCellIndex = null;
         let waitingForAnswer = false;
 
-       const questions = [
-            // Existing questions (1-14)
-            {
-                "question": "Kurš bija grupas The Beatles solists?",
-                "options": ["John Lennon", "Paul McCartney", "George Harrison", "Ringo Starr"],
-                "correct": "John Lennon"
-            },
-            {
-                "question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?",
-                "options": ["1975", "1980", "1969", "1991"],
-                "correct": "1975"
-            },
-            {
-                "question": "Kā sauc slaveno latviešu komponistu, kurš radījis 'Gaismas pili'?",
-                "options": ["Jānis Lūsēns", "Mārtiņš Brauns", "Pēteris Vasks", "Jāzeps Vītols"],
-                "correct": "Pēteris Vasks"
-            },
-            {
-                "question": "Kas ir klavieru izcelsme?",
-                "options": ["Stīgu instruments", "Pūšamais instruments", "Atsitienu instruments", "Tastatūras instruments"],
-                "correct": "Tastatūras instruments"
-            },
-            {
-                "question": "Kāds ir dziesmas 'Despacito' izpildītājs?",
-                "options": ["Luis Fonsi", "Enrique Iglesias", "Shakira", "Daddy Yankee"],
-                "correct": "Luis Fonsi"
-            },
-            {
-                "question": "Kurā žanrā ir grupas Metallica mūzika?",
-                "options": ["Popmūzika", "Klasiķe", "Metal", "Jazz"],
-                "correct": "Metal"
-            },
-            {
-                "question": "Kāds ir Latvijas valsts himnas nosaukums?",
-                "options": ["Pūt, vējiņi!", "Daugava", "Gaismas pils", "Latvijas dziesma"],
-                "correct": "Pūt, vējiņi!"
-            },
-            {
-                "question": "Kas ir atbildīgs par ritmu dziesmās?",
-                "options": ["Vokāls", "Baskitāra", "Bungas", "Klavieres"],
-                "correct": "Bungas"
-            },
-            {
-                "question": "Kas bija grupas Nirvana solists?",
-                "options": ["Kurt Cobain", "Freddie Mercury", "Liam Gallagher", "Ozzy Osbourne"],
-                "correct": "Kurt Cobain"
-            },
-            {
-                "question": "Kurš ir dziedājis dziesmu 'Shape of You'?",
-                "options": ["Ed Sheeran", "Justin Bieber", "Shawn Mendes", "Harry Styles"],
-                "correct": "Ed Sheeran"
-            },
-            {
-                "question": "Kurā valstī sākās popmūzika?",
-                "options": ["ASV", "Lielbritānijā", "Meksikā", "Indijā"],
-                "correct": "ASV"
-            },
-            {
-                "question": "Pēc desmit gadu ilgas spāņu dziesmu rakstīšanas, kurš mākslinieks kopš 2001. gada ar angļu dziesmām ieguva starptautisku slavu?",
-                "options": ["King Von", "Shakira", "Nicki Minaj"],
-                "correct": "Shakira"
-            },
-            {
-                "question": "Kas ir popmūzikas karalis?",
-                "options": ["Maikls Džeksons", "Džastins Bībers", "Kanye West"],
-                "correct": "Maikls Džeksons"
-            },
-            {
-                "question": "Pēc nosaukuma Puffy, Puff Daddy, P. Diddy, Diddy un P. Diddy (atkal), ar kuru vārdu šis mākslinieks apmetās 2008. gadā?",
-                "options": ["Eminems", "Teilore Swifta", "Šons Džons"],
-                "correct": "Šons Džons"
-            },
+    <script>
+const questions = [
+    // Oriģinālie jautājumi (1-14)
+    {
+        "question": "Kurš bija grupas The Beatles solists?",
+        "options": ["John Lennon", "Paul McCartney", "George Harrison", "Ringo Starr"],
+        "correct": "John Lennon"
+    },
+    {
+        "question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?",
+        "options": ["1975", "1980", "1969", "1991"],
+        "correct": "1975"
+    },
+    {
+        "question": "Kā sauc slaveno latviešu komponistu, kurš radījis 'Gaismas pili'?",
+        "options": ["Jānis Lūsēns", "Mārtiņš Brauns", "Pēteris Vasks", "Jāzeps Vītols"],
+        "correct": "Pēteris Vasks"
+    },
+    {
+        "question": "Kas ir klavieru izcelsme?",
+        "options": ["Stīgu instruments", "Pūšamais instruments", "Atsitienu instruments", "Tastatūras instruments"],
+        "correct": "Tastatūras instruments"
+    },
+    {
+        "question": "Kāds ir dziesmas 'Despacito' izpildītājs?",
+        "options": ["Luis Fonsi", "Enrique Iglesias", "Shakira", "Daddy Yankee"],
+        "correct": "Luis Fonsi"
+    },
+    {
+        "question": "Kurā žanrā ir grupas Metallica mūzika?",
+        "options": ["Popmūzika", "Klasiķe", "Metal", "Jazz"],
+        "correct": "Metal"
+    },
+    {
+        "question": "Kāds ir Latvijas valsts himnas nosaukums?",
+        "options": ["Pūt, vējiņi!", "Daugava", "Gaismas pils", "Latvijas dziesma"],
+        "correct": "Pūt, vējiņi!"
+    },
+    {
+        "question": "Kas ir atbildīgs par ritmu dziesmās?",
+        "options": ["Vokāls", "Baskitāra", "Bungas", "Klavieres"],
+        "correct": "Bungas"
+    },
+    {
+        "question": "Kas bija grupas Nirvana solists?",
+        "options": ["Kurt Cobain", "Freddie Mercury", "Liam Gallagher", "Ozzy Osbourne"],
+        "correct": "Kurt Cobain"
+    },
+    {
+        "question": "Kurš ir dziedājis dziesmu 'Shape of You'?",
+        "options": ["Ed Sheeran", "Justin Bieber", "Shawn Mendes", "Harry Styles"],
+        "correct": "Ed Sheeran"
+    },
+    {
+        "question": "Kurā valstī sākās popmūzika?",
+        "options": ["ASV", "Lielbritānijā", "Meksikā", "Indijā"],
+        "correct": "ASV"
+    },
+    {
+        "question": "Pēc desmit gadu ilgas spāņu dziesmu rakstīšanas, kurš mākslinieks kopš 2001. gada ar angļu dziesmām ieguva starptautisku slavu?",
+        "options": ["King Von", "Shakira", "Nicki Minaj"],
+        "correct": "Shakira"
+    },
+    {
+        "question": "Kas ir popmūzikas karalis?",
+        "options": ["Maikls Džeksons", "Džastins Bībers", "Kanye West"],
+        "correct": "Maikls Džeksons"
+    },
+    {
+        "question": "Pēc nosaukuma Puffy, Puff Daddy, P. Diddy, Diddy un P. Diddy (atkal), ar kuru vārdu šis mākslinieks apmetās 2008. gadā?",
+        "options": ["Eminems", "Teilore Swifta", "Šons Džons"],
+        "correct": "Šons Džons"
+    },
 
-            // New questions (15-24)
-            {
-                "question": "Kā sauc septiņas notis mūzikā?",
-                "options": ["Do, Re, Mi, Fa, Sol, La, Si", "A, B, C, D, E, F, G", "1, 2, 3, 4, 5, 6, 7", "Alpha, Beta, Gamma, Delta, Epsilon, Zeta, Eta"],
-                "correct": "Do, Re, Mi, Fa, Sol, La, Si"
-            },
-            {
-                "question": "Kādu instrumentu spēlēja Viljams Šekspīra lugās Hamleta tēvs?",
-                "options": ["Čells", "Ģitāra", "Fleita", "Bungas"],
-                "correct": "Čells"
-            },
-            {
-                "question": "Kura grupa ir ierakstījusi visvairāk albumus Billboard 200 topā?",
-                "options": ["The Beatles", "Rolling Stones", "Led Zeppelin", "Pink Floyd"],
-                "correct": "The Beatles"
-            },
-            {
-                "question": "Kāds ir visvairāk pārdotais albums visā pasaulē?",
-                "options": ["Thriller - Michael Jackson", "Back in Black - AC/DC", "The Dark Side of the Moon - Pink Floyd", "Their Greatest Hits - Eagles"],
-                "correct": "Thriller - Michael Jackson"
-            },
-            {
-                "question": "Kā sauc mūzikas tempu, kas ir ļoti lēns?",
-                "options": ["Adagio", "Allegro", "Presto", "Moderato"],
-                "correct": "Adagio"
-            },
-            {
-                "question": "Kurš komponists rakstīja klusuma skaņdarbi '4\'33\"'?",
-                "options": ["Johanns Sebastians Bahs", "Džons Keidžs", "Volfgangs Amadejs Mocarts", "Ludvigs van Bēthovens"],
-                "correct": "Džons Keidžs"
-            },
-            {
-                "question": "Kā sauc mūzikas žanru, kas radies Jamaikā 1960. gados?",
-                "options": ["Ska", "Reggae", "Dub", "Rocksteady"],
-                "correct": "Reggae"
-            },
-            {
-                "question": "Kura no šīm nav īsta mūzikas teorijas termins?",
-                "options": ["Harmonija", "Ritms", "Melodija", "Sonika"],
-                "correct": "Sonika"
-            },
-            {
-                "question": "Kā sauc mūzikas formu, kurā galvenā tēma atkārtojas, mijiedarbojoties ar citām tēmām?",
-                "options": ["Sonāte", "Rondō", "Fūga", "Simfonija"],
-                "correct": "Rondō"
-            },
-            {
-                "question": "Kurš instruments tradicionāli nav simfoniskajā orķestrī?",
-                "options": ["Čells", "Klarinets", "Saksofons", "Fagots"],
-                "correct": "Saksofons"
-            },
-            {
-                "question": "Kā sauc divu vai vairāku dažādu melodiju vienlaicīgu skanēšanu?",
-                "options": ["Harmonija", "Kontrapunkts", "Polifonija", "Unisons"],
-                "correct": "Kontrapunkts"
-            },
-            {
-                "question": "Kura no šīm nav īsta mūzikas dinamisks nianses apzīmējums?",
-                "options": ["Pianissimo", "Fortissimo", "Mezzoforte", "Allegrissimo"],
-                "correct": "Allegrissimo"
-            }
-        ];
+    // Jaunie jautājumi par Latviju (15-24)
+    {
+        "question": "Kura latviešu grupa dziedāja 'Pērkons'?",
+        "options": ["Prāta Vētra", "Pērkons", "Menuets", "Jumprava"],
+        "correct": "Pērkons"
+    },
+    {
+        "question": "Kurš latviešu mūziķis ir dziedājis 'Dzimtā valoda'?",
+        "options": ["Raimonds Pauls", "Līvi", "Imants Kalniņš", "Jānis Šipkēvics"],
+        "correct": "Jānis Šipkēvics"
+    },
+    {
+        "question": "Kā sauc lielāko mūzikas festivālu Latvijā?",
+        "options": ["Positivus", "Laba daba", "Saulkrasti Jazz", "Visiem festivāls"],
+        "correct": "Positivus"
+    },
+    {
+        "question": "Kura no šīm nav latviešu tautasdziesma?",
+        "options": ["Pūt, vējiņi!", "Ai, jūs meži", "Kalnu gali", "Despacito"],
+        "correct": "Despacito"
+    },
+    {
+        "question": "Kurš latviešu mūziķis ir dziedājis 'Līgo'?",
+        "options": ["Raimonds Pauls", "Ainars Mielavs", "Zigfrīds Muktupāvels", "Margarita Vilcāne"],
+        "correct": "Ainars Mielavs"
+    },
+    {
+        "question": "Kura no šīm ir latviešu tautas mūzikas instruments?",
+        "options": ["Kokles", "Ģitāra", "Pianīno", "Sintizators"],
+        "correct": "Kokles"
+    },
+    {
+        "question": "Kurš no šiem ir slavens latviešu diriģents?",
+        "options": ["Andris Nelsons", "Raimonds Pauls", "Imants Kalniņš", "Mārtiņš Brauns"],
+        "correct": "Andris Nelsons"
+    },
+    {
+        "question": "Kura dziesma ir kļuvusi par neoficiālu Jāņu himnu?",
+        "options": ["Pūt, vējiņi!", "Līgo", "Dievs, svētī Latviju!", "Saulīte"],
+        "correct": "Līgo"
+    },
+    {
+        "question": "Kurš no šiem nav latviešu mūzikas grupa?",
+        "options": ["Prāta Vētra", "Brainstorm", "Pērkons", "Metallica"],
+        "correct": "Metallica"
+    },
+    {
+        "question": "Kurš latviešu mūziķis ir dziedājis 'Saule, Pērkons, Daugava'?",
+        "options": ["Raimonds Pauls", "Imants Kalniņš", "Zigfrīds Muktupāvels", "Jānis Lūsēns"],
+        "correct": "Zigfrīds Muktupāvels"
+    }
+];
+
+// Pārējais kods paliek nemainīgs
+</script>
 
         // Modal functionality
         function showRules() {
