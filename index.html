@@ -54,10 +54,6 @@
             cursor: not-allowed;
             background-color: #2185d0;
         }
-        .cell.locked {
-            cursor: not-allowed;
-            background-color: #ff5555;
-        }
         #status {
             margin: 20px 0;
             font-size: 1.5em;
@@ -145,9 +141,6 @@
             transition: background 0.3s;
             width: 250px;
         }
-        #rules-button:hover {
-            background-color: #2185d0;
-        }
         #rulesModal {
             display: none;
             position: fixed;
@@ -157,7 +150,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0,0,0,0.4);
         }
         #rulesModalContent {
             background-color: #fff;
@@ -207,13 +200,135 @@
                 <li>Pirms gājiena veikšanas jāatbild uz mūzikas jautājumu</li>
                 <li>Pareiza atbilde ļauj veikt gājienu</li>
                 <li>Nepareiza atbilde zaudē gājienu</li>
-                <li>Uzvar spēlētājs, kurš izveido trīs savus simbolus pēc kārtas (vertikāli, horizontāli vai diagonāli)</li>
+                <li>Uzvar spēlētājs, kurš izveido trīs savus simbolus pēc kārtas</li>
                 <li>Ja visas šūnas aizpildītas un nav uzvarētāja, spēle beidzas neizšķirti</li>
             </ul>
         </div>
     </div>
 
     <script>
+        const questions = [
+            // Original questions (1-14)
+            {
+                "question": "Kurš bija grupas The Beatles solists?",
+                "options": ["John Lennon", "Paul McCartney", "George Harrison", "Ringo Starr"],
+                "correct": "John Lennon"
+            },
+            {
+                "question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?",
+                "options": ["1975", "1980", "1969", "1991"],
+                "correct": "1975"
+            },
+            {
+                "question": "Kā sauc slaveno latviešu komponistu, kurš radījis 'Gaismas pili'?",
+                "options": ["Jānis Lūsēns", "Mārtiņš Brauns", "Pēteris Vasks", "Jāzeps Vītols"],
+                "correct": "Pēteris Vasks"
+            },
+            {
+                "question": "Kas ir klavieru izcelsme?",
+                "options": ["Stīgu instruments", "Pūšamais instruments", "Atsitienu instruments", "Tastatūras instruments"],
+                "correct": "Tastatūras instruments"
+            },
+            {
+                "question": "Kāds ir dziesmas 'Despacito' izpildītājs?",
+                "options": ["Luis Fonsi", "Enrique Iglesias", "Shakira", "Daddy Yankee"],
+                "correct": "Luis Fonsi"
+            },
+            {
+                "question": "Kurā žanrā ir grupas Metallica mūzika?",
+                "options": ["Popmūzika", "Klasiķe", "Metal", "Jazz"],
+                "correct": "Metal"
+            },
+            {
+                "question": "Kāds ir Latvijas valsts himnas nosaukums?",
+                "options": ["Pūt, vējiņi!", "Daugava", "Gaismas pils", "Latvijas dziesma"],
+                "correct": "Pūt, vējiņi!"
+            },
+            {
+                "question": "Kas ir atbildīgs par ritmu dziesmās?",
+                "options": ["Vokāls", "Baskitāra", "Bungas", "Klavieres"],
+                "correct": "Bungas"
+            },
+            {
+                "question": "Kas bija grupas Nirvana solists?",
+                "options": ["Kurt Cobain", "Freddie Mercury", "Liam Gallagher", "Ozzy Osbourne"],
+                "correct": "Kurt Cobain"
+            },
+            {
+                "question": "Kurš ir dziedājis dziesmu 'Shape of You'?",
+                "options": ["Ed Sheeran", "Justin Bieber", "Shawn Mendes", "Harry Styles"],
+                "correct": "Ed Sheeran"
+            },
+            {
+                "question": "Kurā valstī sākās popmūzika?",
+                "options": ["ASV", "Lielbritānijā", "Meksikā", "Indijā"],
+                "correct": "ASV"
+            },
+            {
+                "question": "Pēc desmit gadu ilgas spāņu dziesmu rakstīšanas, kurš mākslinieks kopš 2001. gada ar angļu dziesmām ieguva starptautisku slavu?",
+                "options": ["King Von", "Shakira", "Nicki Minaj"],
+                "correct": "Shakira"
+            },
+            {
+                "question": "Kas ir popmūzikas karalis?",
+                "options": ["Maikls Džeksons", "Džastins Bībers", "Kanye West"],
+                "correct": "Maikls Džeksons"
+            },
+            {
+                "question": "Pēc nosaukuma Puffy, Puff Daddy, P. Diddy, Diddy un P. Diddy (atkal), ar kuru vārdu šis mākslinieks apmetās 2008. gadā?",
+                "options": ["Eminems", "Teilore Swifta", "Šons Džons"],
+                "correct": "Šons Džons"
+            },
+
+            // New Latvia-specific questions (15-24)
+           {
+                "question": "Kā sauc populāro latviešu grupu, kas starptautiski pazīstama ar nosaukumu 'Brainstorm'?",
+                "options": ["Pērkons", "Prāta Vētra", "Menuets", "Jumprava"],
+                "correct": "Prāta Vētra"
+            },
+            {
+                "question": "Kā sauc lielāko mūzikas festivālu Latvijā?",
+                "options": ["Positivus", "Laba daba", "Saulkrasti Jazz", "Visiem festivāls"],
+                "correct": "Positivus"
+            },
+            {
+                "question": "Kura no šīm nav latviešu tautasdziesma?",
+                "options": ["Pūt, vējiņi!", "Ai, jūs meži", "Kalnu gali", "Despacito"],
+                "correct": "Despacito"
+            },
+            {
+                "question": "Kurš latviešu mūziķis ir dziedājis 'Līgo'?",
+                "options": ["Raimonds Pauls", "Ainars Mielavs", "Zigfrīds Muktupāvels", "Margarita Vilcāne"],
+                "correct": "Ainars Mielavs"
+            },
+            {
+                "question": "Kura no šīm ir latviešu tautas mūzikas instruments?",
+                "options": ["Kokles", "Ģitāra", "Pianīno", "Sintizators"],
+                "correct": "Kokles"
+            },
+            {
+                "question": "Kurš no šiem ir slavens latviešu diriģents?",
+                "options": ["Andris Nelsons", "Raimonds Pauls", "Imants Kalniņš", "Mārtiņš Brauns"],
+                "correct": "Andris Nelsons"
+            },
+            {
+                "question": "Kura dziesma ir kļuvusi par neoficiālu Jāņu himnu?",
+                "options": ["Pūt, vējiņi!", "Līgo", "Dievs, svētī Latviju!", "Saulīte"],
+                "correct": "Līgo"
+            },
+            {
+                "question": "Kurš no šiem nav latviešu mūzikas grupa?",
+                "options": ["Prāta Vētra", "Brainstorm", "Pērkons", "Metallica"],
+                "correct": "Metallica"
+            },
+            {
+                "question": "Kurš latviešu mūziķis ir dziedājis 'Saule, Pērkons, Daugava'?",
+                "options": ["Raimonds Pauls", "Imants Kalniņš", "Zigfrīds Muktupāvels", "Jānis Lūsēns"],
+                "correct": "Zigfrīds Muktupāvels"
+            }
+        ];
+
+        // Game variables
         const board = document.getElementById("board");
         const status = document.getElementById("status");
         const quizContainer = document.getElementById("quiz");
@@ -233,137 +348,7 @@
         let selectedCellIndex = null;
         let waitingForAnswer = false;
 
-    <script>
-const questions = [
-    // Oriģinālie jautājumi (1-14)
-    {
-        "question": "Kurš bija grupas The Beatles solists?",
-        "options": ["John Lennon", "Paul McCartney", "George Harrison", "Ringo Starr"],
-        "correct": "John Lennon"
-    },
-    {
-        "question": "Kurā gadā iznāca Queen dziesma 'Bohemian Rhapsody'?",
-        "options": ["1975", "1980", "1969", "1991"],
-        "correct": "1975"
-    },
-    {
-        "question": "Kā sauc slaveno latviešu komponistu, kurš radījis 'Gaismas pili'?",
-        "options": ["Jānis Lūsēns", "Mārtiņš Brauns", "Pēteris Vasks", "Jāzeps Vītols"],
-        "correct": "Pēteris Vasks"
-    },
-    {
-        "question": "Kas ir klavieru izcelsme?",
-        "options": ["Stīgu instruments", "Pūšamais instruments", "Atsitienu instruments", "Tastatūras instruments"],
-        "correct": "Tastatūras instruments"
-    },
-    {
-        "question": "Kāds ir dziesmas 'Despacito' izpildītājs?",
-        "options": ["Luis Fonsi", "Enrique Iglesias", "Shakira", "Daddy Yankee"],
-        "correct": "Luis Fonsi"
-    },
-    {
-        "question": "Kurā žanrā ir grupas Metallica mūzika?",
-        "options": ["Popmūzika", "Klasiķe", "Metal", "Jazz"],
-        "correct": "Metal"
-    },
-    {
-        "question": "Kāds ir Latvijas valsts himnas nosaukums?",
-        "options": ["Pūt, vējiņi!", "Daugava", "Gaismas pils", "Latvijas dziesma"],
-        "correct": "Pūt, vējiņi!"
-    },
-    {
-        "question": "Kas ir atbildīgs par ritmu dziesmās?",
-        "options": ["Vokāls", "Baskitāra", "Bungas", "Klavieres"],
-        "correct": "Bungas"
-    },
-    {
-        "question": "Kas bija grupas Nirvana solists?",
-        "options": ["Kurt Cobain", "Freddie Mercury", "Liam Gallagher", "Ozzy Osbourne"],
-        "correct": "Kurt Cobain"
-    },
-    {
-        "question": "Kurš ir dziedājis dziesmu 'Shape of You'?",
-        "options": ["Ed Sheeran", "Justin Bieber", "Shawn Mendes", "Harry Styles"],
-        "correct": "Ed Sheeran"
-    },
-    {
-        "question": "Kurā valstī sākās popmūzika?",
-        "options": ["ASV", "Lielbritānijā", "Meksikā", "Indijā"],
-        "correct": "ASV"
-    },
-    {
-        "question": "Pēc desmit gadu ilgas spāņu dziesmu rakstīšanas, kurš mākslinieks kopš 2001. gada ar angļu dziesmām ieguva starptautisku slavu?",
-        "options": ["King Von", "Shakira", "Nicki Minaj"],
-        "correct": "Shakira"
-    },
-    {
-        "question": "Kas ir popmūzikas karalis?",
-        "options": ["Maikls Džeksons", "Džastins Bībers", "Kanye West"],
-        "correct": "Maikls Džeksons"
-    },
-    {
-        "question": "Pēc nosaukuma Puffy, Puff Daddy, P. Diddy, Diddy un P. Diddy (atkal), ar kuru vārdu šis mākslinieks apmetās 2008. gadā?",
-        "options": ["Eminems", "Teilore Swifta", "Šons Džons"],
-        "correct": "Šons Džons"
-    },
-
-    // Jaunie jautājumi par Latviju (15-24)
-    {
-        "question": "Kura latviešu grupa dziedāja 'Pērkons'?",
-        "options": ["Prāta Vētra", "Pērkons", "Menuets", "Jumprava"],
-        "correct": "Pērkons"
-    },
-    {
-        "question": "Kurš latviešu mūziķis ir dziedājis 'Dzimtā valoda'?",
-        "options": ["Raimonds Pauls", "Līvi", "Imants Kalniņš", "Jānis Šipkēvics"],
-        "correct": "Jānis Šipkēvics"
-    },
-    {
-        "question": "Kā sauc lielāko mūzikas festivālu Latvijā?",
-        "options": ["Positivus", "Laba daba", "Saulkrasti Jazz", "Visiem festivāls"],
-        "correct": "Positivus"
-    },
-    {
-        "question": "Kura no šīm nav latviešu tautasdziesma?",
-        "options": ["Pūt, vējiņi!", "Ai, jūs meži", "Kalnu gali", "Despacito"],
-        "correct": "Despacito"
-    },
-    {
-        "question": "Kurš latviešu mūziķis ir dziedājis 'Līgo'?",
-        "options": ["Raimonds Pauls", "Ainars Mielavs", "Zigfrīds Muktupāvels", "Margarita Vilcāne"],
-        "correct": "Ainars Mielavs"
-    },
-    {
-        "question": "Kura no šīm ir latviešu tautas mūzikas instruments?",
-        "options": ["Kokles", "Ģitāra", "Pianīno", "Sintizators"],
-        "correct": "Kokles"
-    },
-    {
-        "question": "Kurš no šiem ir slavens latviešu diriģents?",
-        "options": ["Andris Nelsons", "Raimonds Pauls", "Imants Kalniņš", "Mārtiņš Brauns"],
-        "correct": "Andris Nelsons"
-    },
-    {
-        "question": "Kura dziesma ir kļuvusi par neoficiālu Jāņu himnu?",
-        "options": ["Pūt, vējiņi!", "Līgo", "Dievs, svētī Latviju!", "Saulīte"],
-        "correct": "Līgo"
-    },
-    {
-        "question": "Kurš no šiem nav latviešu mūzikas grupa?",
-        "options": ["Prāta Vētra", "Brainstorm", "Pērkons", "Metallica"],
-        "correct": "Metallica"
-    },
-    {
-        "question": "Kurš latviešu mūziķis ir dziedājis 'Saule, Pērkons, Daugava'?",
-        "options": ["Raimonds Pauls", "Imants Kalniņš", "Zigfrīds Muktupāvels", "Jānis Lūsēns"],
-        "correct": "Zigfrīds Muktupāvels"
-    }
-];
-
-// Pārējais kods paliek nemainīgs
-</script>
-
-         Modal functionality
+        // Modal functions
         function showRules() {
             rulesModal.style.display = "block";
         }
@@ -378,6 +363,7 @@ const questions = [
             }
         }
 
+        // Game functions
         function startGame(mode) {
             isBotGame = mode === 'bot';
             gameSetup.style.display = 'none';
@@ -446,7 +432,7 @@ const questions = [
         function botMove() {
             if (!gameActive) return;
             
-            // First check if bot can win
+            // Check for winning move
             for (let i = 0; i < 9; i++) {
                 if (gameBoard[i] === "") {
                     gameBoard[i] = "O";
@@ -460,7 +446,7 @@ const questions = [
                 }
             }
             
-            // Then check if need to block player
+            // Block player's winning move
             for (let i = 0; i < 9; i++) {
                 if (gameBoard[i] === "") {
                     gameBoard[i] = "X";
@@ -474,11 +460,11 @@ const questions = [
                 }
             }
             
-            // Then take center if available
+            // Take center if available
             if (gameBoard[4] === "") {
                 makeMove(4, "O");
             } 
-            // Then take a corner
+            // Take a corner
             else {
                 const corners = [0, 2, 6, 8];
                 const availableCorners = corners.filter(i => gameBoard[i] === "");
@@ -486,7 +472,7 @@ const questions = [
                     const randomCorner = availableCorners[Math.floor(Math.random() * availableCorners.length)];
                     makeMove(randomCorner, "O");
                 } 
-                // Then take any available edge
+                // Take any available edge
                 else {
                     const edges = [1, 3, 5, 7];
                     const availableEdges = edges.filter(i => gameBoard[i] === "");
