@@ -21,6 +21,7 @@
         h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
+            color: #61dafb;
         }
         .board {
             display: none;
@@ -62,11 +63,15 @@
             font-size: 1.5em;
             font-weight: bold;
             display: none;
+            min-height: 2em;
         }
         #quiz {
             display: none;
             margin-top: 20px;
             max-width: 600px;
+            background-color: #444;
+            padding: 20px;
+            border-radius: 10px;
         }
         .quiz-button {
             background-color: #61dafb;
@@ -95,7 +100,7 @@
             margin: 10px;
             font-size: 1.2em;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px;
             transition: background 0.3s;
             width: 250px;
         }
@@ -129,6 +134,47 @@
             height: 50px;
             font-size: 1.2em;
         }
+        #rules-button {
+            background-color: #61dafb;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s;
+            width: 250px;
+        }
+        #rules-button:hover {
+            background-color: #2185d0;
+        }
+        #rulesModal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        #rulesModalContent {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            color: black;
+        }
+        #closeModal {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -136,6 +182,7 @@
     <div id="game-setup">
         <button class="game-choice-button" onclick="startGame('friend')">Spēlēt pret draugu</button>
         <button class="game-choice-button" onclick="startGame('bot')">Spēlēt pret botu</button>
+        <button id="rules-button" onclick="showRules()">Noteikumi</button>
     </div>
     <div class="board" id="board"></div>
     <div id="status">Spēlētāja X gājiens</div>
@@ -149,6 +196,23 @@
     </audio>
     <button id="music-toggle" onclick="toggleMusic()">🎵</button>
 
+    <!-- Rules Modal -->
+    <div id="rulesModal">
+        <div id="rulesModalContent">
+            <span id="closeModal">&times;</span>
+            <h2>Noteikumi</h2>
+            <ul>
+                <li>Spēlē "Krustiņi un nullītes" ar mūzikas jautājumiem</li>
+                <li>Katrs spēlētājs pārmaiņus izvēlas šūnu</li>
+                <li>Pirms gājiena veikšanas jāatbild uz mūzikas jautājumu</li>
+                <li>Pareiza atbilde ļauj veikt gājienu</li>
+                <li>Nepareiza atbilde zaudē gājienu</li>
+                <li>Uzvar spēlētājs, kurš izveido trīs savus simbolus pēc kārtas (vertikāli, horizontāli vai diagonāli)</li>
+                <li>Ja visas šūnas aizpildītas un nav uzvarētāja, spēle beidzas neizšķirti</li>
+            </ul>
+        </div>
+    </div>
+
     <script>
         const board = document.getElementById("board");
         const status = document.getElementById("status");
@@ -158,6 +222,8 @@
         const music = document.getElementById("background-music");
         const gameSetup = document.getElementById("game-setup");
         const resetButton = document.getElementById("reset-button");
+        const rulesModal = document.getElementById("rulesModal");
+        const closeModal = document.getElementById("closeModal");
 
         let cells = [];
         let currentPlayer = "X";
@@ -240,7 +306,7 @@
                 "correct": "Šons Džons"
             },
 
-           
+            // New questions (15-24)
             {
                 "question": "Kā sauc septiņas notis mūzikā?",
                 "options": ["Do, Re, Mi, Fa, Sol, La, Si", "A, B, C, D, E, F, G", "1, 2, 3, 4, 5, 6, 7", "Alpha, Beta, Gamma, Delta, Epsilon, Zeta, Eta"],
@@ -302,6 +368,21 @@
                 "correct": "Allegrissimo"
             }
         ];
+
+        // Modal functionality
+        function showRules() {
+            rulesModal.style.display = "block";
+        }
+
+        closeModal.onclick = function() {
+            rulesModal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == rulesModal) {
+                rulesModal.style.display = "none";
+            }
+        }
 
         function startGame(mode) {
             isBotGame = mode === 'bot';
@@ -371,6 +452,7 @@
         function botMove() {
             if (!gameActive) return;
             
+            // First check if bot can win
             for (let i = 0; i < 9; i++) {
                 if (gameBoard[i] === "") {
                     gameBoard[i] = "O";
@@ -384,6 +466,7 @@
                 }
             }
             
+            // Then check if need to block player
             for (let i = 0; i < 9; i++) {
                 if (gameBoard[i] === "") {
                     gameBoard[i] = "X";
@@ -397,22 +480,25 @@
                 }
             }
             
+            // Then take center if available
             if (gameBoard[4] === "") {
                 makeMove(4, "O");
-            } else {
+            } 
+            // Then take a corner
+            else {
                 const corners = [0, 2, 6, 8];
                 const availableCorners = corners.filter(i => gameBoard[i] === "");
                 if (availableCorners.length > 0) {
                     const randomCorner = availableCorners[Math.floor(Math.random() * availableCorners.length)];
                     makeMove(randomCorner, "O");
-                } else {
-                    let availableMoves = [];
-                    for (let i = 0; i < 9; i++) {
-                        if (gameBoard[i] === "") availableMoves.push(i);
-                    }
-                    if (availableMoves.length > 0) {
-                        const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
-                        makeMove(randomMove, "O");
+                } 
+                // Then take any available edge
+                else {
+                    const edges = [1, 3, 5, 7];
+                    const availableEdges = edges.filter(i => gameBoard[i] === "");
+                    if (availableEdges.length > 0) {
+                        const randomEdge = availableEdges[Math.floor(Math.random() * availableEdges.length)];
+                        makeMove(randomEdge, "O");
                     }
                 }
             }
@@ -449,7 +535,7 @@
 
         function toggleMusic() {
             if (music.paused) {
-                music.play();
+                music.play().catch(e => console.log("Audio playback failed:", e));
             } else {
                 music.pause();
             }
@@ -486,6 +572,12 @@
                         }
                     } else {
                         alert(`Nepareizi! Pareizā atbilde: ${questionData.correct}`);
+                        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                        status.textContent = `Spēlētāja ${currentPlayer} gājiens`;
+                        
+                        if (isBotGame && currentPlayer === 'O') {
+                            setTimeout(botMove, 500);
+                        }
                     }
                     
                     quizContainer.style.display = "none";
